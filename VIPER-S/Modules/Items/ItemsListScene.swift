@@ -18,6 +18,9 @@ class ItemsListScene: UIViewController {
         navigationItem.rightBarButtonItem = addButton
     }
     
+    func close(){
+        dismiss(animated: true, completion: nil)
+    }
 }
 
 

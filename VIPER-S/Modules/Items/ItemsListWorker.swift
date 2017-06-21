@@ -2,7 +2,7 @@ import Foundation
 
 class ItemsListWorker {
     
-    var presenter: ItemsList_PresentData!
+    weak var presenter: ItemsList_PresentData!
 }
 
 extension ItemsListWorker: ItemsList_ManageData {

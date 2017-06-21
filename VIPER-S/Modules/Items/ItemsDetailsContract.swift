@@ -1,6 +1,6 @@
 import Foundation
 
-protocol ItemsDetails_DisplayUI {
+protocol ItemsDetails_DisplayUI: class {
     func display(name:String)
     func display(state:String)
     func display(date:String)

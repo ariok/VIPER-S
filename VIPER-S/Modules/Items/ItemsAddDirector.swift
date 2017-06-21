@@ -3,7 +3,7 @@ import Foundation
 class ItemsAddDirector {
     
     var dataManager: ItemsAdd_ManageData!
-    var ui: ItemsAdd_DisplayUI!
+    weak var ui: ItemsAdd_DisplayUI!
     var navigator: ItemsAdd_Navigate!
     
     var delegate: ItemsAdd_Delegate?

@@ -2,7 +2,7 @@ import Foundation
 
 // MARK: - Protocols
 
-protocol ItemsAdd_DisplayUI {
+protocol ItemsAdd_DisplayUI: class {
     func displayError()
     func displaySuccess()
     func toggle(loading:Bool)
@@ -16,7 +16,7 @@ protocol ItemsAdd_ManageData{
     func add(item:Item)
 }
 
-protocol ItemsAdd_PresentData{
+protocol ItemsAdd_PresentData: class{
     func presentSuccess()
     func presentError()
 }

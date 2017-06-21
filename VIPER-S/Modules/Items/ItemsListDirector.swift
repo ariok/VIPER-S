@@ -3,7 +3,7 @@ import UIKit
 class ItemsListDirector {
     
     var dataManager: ItemsList_ManageData!
-    var ui: ItemsList_DisplayUI!
+    weak var ui: ItemsList_DisplayUI!
     var navigator: ItemsList_Navigate!
     
     // Data

@@ -18,7 +18,7 @@ struct ItemUI {
 
 // MARK: - Protocols
 
-protocol ItemsList_DisplayUI {
+protocol ItemsList_DisplayUI: class {
     func toggle(loading:Bool)
     func display(items: [ItemUI])
     func displayError()
@@ -37,7 +37,7 @@ protocol ItemsList_ManageData{
     func deleteAllItems()
 }
 
-protocol ItemsList_PresentData{
+protocol ItemsList_PresentData: class{
     func present(items:[Item])
     func presentSuccess()
     func presentError()

@@ -2,7 +2,7 @@ import Foundation
 
 class ItemsDetailsDirector {
     var item:Item!
-    var ui: ItemsDetails_DisplayUI!
+    weak var ui: ItemsDetails_DisplayUI!
 }
 
 extension ItemsDetailsDirector: ItemsDetails_HandleUIEvents {
