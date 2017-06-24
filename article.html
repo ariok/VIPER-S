@@ -1,0 +1,648 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <style type="text/css">
+    /*! Typebase.less v0.1.0 | MIT License */
+/* Setup */
+html {
+  /* Change default typefaces here */
+  font-family: serif;
+  font-size: 120.5%;
+  -webkit-font-smoothing: antialiased;
+  padding: 10%;
+}
+/* Copy & Lists */
+p {
+  line-height: 1.5rem;
+  margin-top: 1.5rem;
+  margin-bottom: 0;
+}
+ul,
+ol {
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+ul li,
+ol li {
+  line-height: 1.5rem;
+}
+ul ul,
+ol ul,
+ul ol,
+ol ol {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+blockquote {
+  line-height: 1.5rem;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+/* Headings */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  /* Change heading typefaces here */
+  font-family: sans-serif;
+  margin-top: 1.5rem;
+  margin-bottom: 0;
+  line-height: 1.5rem;
+}
+h1 {
+  font-size: 4.242rem;
+  line-height: 4.5rem;
+  margin-top: 3rem;
+}
+h2 {
+  font-size: 2.828rem;
+  line-height: 3rem;
+  margin-top: 3rem;
+}
+h3 {
+  font-size: 1.414rem;
+}
+h4 {
+  font-size: 0.707rem;
+}
+h5 {
+  font-size: 0.4713333333333333rem;
+}
+h6 {
+  font-size: 0.3535rem;
+}
+/* Tables */
+table {
+  margin-top: 1.5rem;
+  border-spacing: 0px;
+  border-collapse: collapse;
+}
+table td,
+table th {
+  padding: 0;
+  line-height: 33px;
+}
+/* Code blocks */
+code {
+  vertical-align: bottom;
+}
+/* Leading paragraph text */
+.lead {
+  font-size: 1.414rem;
+}
+/* Hug the block above you */
+.hug {
+  margin-top: 0;
+}
+    </style>
+</head>
+<body>
+<article class="post-1312 post type-post status-publish format-standard hentry category-uncategorized">
+            <div class="entry">
+
+                <div class="image_box">
+                <img width="95" height="95" src="http://www.thinkandbuild.it/wp-content/uploads/2017/06/vip.png" class="entry_img wp-post-image" alt="vip" title="vip" />
+                <div class="likes">
+                        <span class="author">By <span class="name">Yari D'areglia</span></span>
+
+                        <div class="twt">
+                            <a href="https://twitter.com/share" class="twitter-share-button" data-via="bitwaker">Tweet</a>
+                        </div>
+
+                        <div class="gog">
+                            <g:plusone size="medium" href="http://www.thinkandbuild.it/viper-s-writing-your-own-architecture-to-understand-its-importance-part-1/"></g:plusone>
+                        </div>
+
+                        <div class="fb-like" data-href="http://www.thinkandbuild.it/viper-s-writing-your-own-architecture-to-understand-its-importance-part-1/" data-width="10" data-height="10px" data-colorscheme="light" data-layout="button_count" data-action="like" data-show-faces="true" data-send="false"></div>
+
+                    </div>
+                </div>
+
+                <div class="body_box">
+
+                    <time>June 19th, 2017</time>
+                    <h2><a href="http://www.thinkandbuild.it/viper-s-writing-your-own-architecture-to-understand-its-importance-part-1/">VIPER-S: writing your own architecture to understand its importance (part 1)</a></h2>
+
+                    <div class="clearfix"></div>
+
+
+                    <div class="text">
+                        <p>After some months using <strong>VIPER</strong> for my apps, I started working on my own architecture: I wanted to create something better for my own needs. I then started sharing thoughts with my colleague <a href="https://twitter.com/marcouberti84" target="_blank">Marco</a>. He is on the Android side of things, but we needed to discuss to find common ground and both get to a consistent result. </p>
+<p>We &#8220;kind of&#8221; failed and ended up with something really similar to VIPER, but! This revisited version of VIPER is what I&#8217;m currently using in my applications, so I wouldn&#8217;t consider it a failed attempt. More like a custom version of VIPER. </p>
+<p>Along this path I learned so many things about architectures that I decided to share the experience with a series of articles. There are two things I&#8217;d like to focus on: </p>
+<p>• the decisions taken to get to a complete architecture, highlighting rationale and doubts (some of which are still there)<br />
+• the architecture I ended up with, showing code and some practical examples.<br />
+From now on let’s call this structure <strong>VIPER-S</strong>. The S here stands for Semantic, since I tried to obtain a clearer way to name things, giving more significance to roles and communication, and adding some rules that improve code readability and writing. </p>
+<h3>LET’S ARCHITECT</h3>
+<p>Let’s start this journey with a question. <strong>Why do we need an architecture?</strong> This question has many different answers but the most relevant are:<br />
+• to have a clear understanding of our code (and simplify its maintenance)<br />
+• To easily distribute responsibilities (and simplify team working)<br />
+• to improve testability (and simplify your life)</p>
+<p>With these answers in mind, and moved by a profound sense of purpose, we can start planning our architecture.</p>
+<p>I’m a big fan of &#8220;divide-et-impera&#8221;: to me it’s a way of life. That&#8217;s why I&#8217;d start by identifying all the <strong>domains</strong> and <strong>roles</strong>, the <strong>actors</strong> that are going to work on these domains and how those actors communicate with each other.  Those elements are going to define the pillars of our architecture so it’s really important to have a clear understanding of what they are.  </p>
+<p>A domain is a big set that contains all the logic for an area of responsibility. A role is a little part of this set, which is more specific and identifies a precise need. An actor is a code element that implements all the functions to satisfy a role. </p>
+<p>Let’s list and describe the domains and roles that I’ve identified to build VIPER-S.</p>
+<h3>ARCHITECTURE DOMAINS: USER INTERFACE</h3>
+<p>With the <strong>User Interface</strong> domain we show information to the users and we interact with them. Let&#8217;s see the roles for this domain.</p>
+<h4>ROLE: DISPLAY UI INFORMATION</h4>
+<p>This is  a really "dumb" role. The data reaching this domain is ready to use and there&#8217;s no need to work on it any further. It only needs to be sent down to the final UI elements, with functions like this:  </p>
+<pre class="brush: objc; title: ; notranslate" title="">
+func display (date:String){
+    label.text = date
+}
+</pre>
+<p>As you can see, the date property has probably been converted from Date to String in a previous step. We only display the <strong>ready-to-use information</strong> here. A label displays a String, so we expect to receive a String.</p>
+<h4>ROLE: HANDLE UI EVENTS</h4>
+<p>This is another not-too-pro-active role, in fact we only intercept user interactions or application lifetime events here. The actor responsible for this role is generally called within a <strong>UI target-action</strong>:</p>
+<pre class="brush: objc; title: ; notranslate" title="">
+@IBAction func save(){
+    eventsHandler.onSave()
+}
+</pre>
+<h3>ARCHITECTURE DOMAINS: DATA</h3>
+<p>The <strong>Data</strong> domain is where we obtain information from a source and we transform it to be presented later, or, alternatively, where we process a user action into something that can be stored somewhere or used somehow. Here are the roles for the Data domain.</p>
+<h4>ROLE: MANAGE DATA</h4>
+<p>Let’s imagine this role as a set of one or more workers that are responsible of handling specific jobs.  They only know how to get their jobs done and they notify someone else when they have completed or failed an operation.</p>
+<p>Here is a simple (unsafe) example of a function for this role: </p>
+<pre class="brush: objc; title: ; notranslate" title="">
+func fetchItems() {
+    networkManager.get(at: itemsPath){
+        (completed, items) in
+        if (completed){
+            presenter.present(items: items)
+        } else {
+            presenter.presentItemFetchError()
+        }
+    }
+}
+</pre>
+<p>A worker is fetching items using a network manager. It knows exactly how to use the manager, but it doesn’t work with any value coming from the network, it just passes the value to an object that in turn knows how to present it.</p>
+<h4>ROLE: PRESENT DATA</h4>
+<p>Let&#8217;s remind ourselves not to confuse presenting with displaying: when we present the information we transform it into something that will be displayed through the UI later. The object that implements this role, is often called from the Manage Data role. Returning to the previous example for the user interface, we are not setting the text value of the label here. Instead, we are transforming a Date into a readable String. </p>
+<pre class="brush: objc; title: ; notranslate" title="">
+func present(date:Date){
+    let dateString = date.localizedString("YYYY-mm-dd")
+    ui.display(date:dateString)
+}
+</pre>
+<h3>ARCHITECTURE DOMAIN: NAVIGATION</h3>
+<p>This domain has a single role: handling the <strong>navigation</strong> for the App. The logic behind how to display the "next view" is entirely handled within this role and the same is true for its initialization and dismissal. We then need to use UIKit to work with Storyboards and call all the needed default iOS navigation functions. </p>
+<pre class="brush: objc; title: ; notranslate" title="">
+func navigateToDetail(‘for’ item:Item) {
+    let itemDetail = ItemDetailNavigator.makeModule(with: item)
+        push(nextViewController: itemDetail)
+}
+</pre>
+<p>In this example the navigator is building the <strong>module</strong> (more on this term later — just look at it as a ViewController for now) that we are going to present and it pushes it to the current navigation stack. </p>
+<h3>COMMUNICATION BETWEEN DOMAINS</h3>
+<p>Let’s now introduce the "director", the first actor for the architecture. We are going to see its code in detail later. For now let&#8217;s just talk about it as the way to build a bridge between the domains we just saw. </p>
+<p>The director is responsible of driving the flow of information from UI events to data handling and from data handling back to the UI. It is also responsible of defining when navigation has to take place. Each operation starts from the director and each result of the operation, at some point, passes through it. </p>
+<p>Let’s check the overview of the architecture discussed so far to better understand how communication happens:</p>
+<p><a class="center_img border_img" href="http://www.thinkandbuild.it/wp-content/uploads/2017/06/viper_overview.png" rel="lightbox[1312]" title="viper_overview"><img src="http://www.thinkandbuild.it/wp-content/uploads/2017/06/viper_overview-300x191.png" alt="" title="viper_overview" width="300" height="191" class="alignnone size-medium wp-image-1318" /></a></p>
+<p>All those arrows&#8230; but trust me, the flow is easier than it looks. Here is a real-life example: when a user taps the save button, the application has to save some information and display a dialog with a success message (or an error in case something goes wrong). </p>
+<p>The flow will start from the left of the previous image from "handle events". The user tap is intercepted and passed to the director. The director sends the information to the object responsible for the role "manage data". When this object completes the operation it’s ready to present the result to the director which, at this point, is sending the information back to the UI domain which in turn knows how to display it. Now let’s say that at the end of the saving operation, instead of presenting a popup we&#8217;d rather go to another page. Easy. The director, instead of moving the flow to the UI domain, can just drive it to the Navigation. </p>
+<h3>LET’S CODE</h3>
+<p>It’s now finally time to translate the architecture logic into code!</p>
+<p>Before starting this process we need to identify the required modules for the example we are going to implement. What’s a module, though? The architecture considers a module what we can simply call a "Page" or a "View" of the application. This means that for an application where you can list, display and add items you have 3 modules. With the MVC architecture, for instance, each module would be a view controller. </p>
+<p>Let’s introduce the example of code that we will implement with these tutorials. We are writing an application to handle generic "Items" that can be enabled or disabled. An Item has a name, a creation date and a state (enabled or disabled). We are going to implement 3 modules to handle items: "Items List", "Add Item" and "Item Detail". Adding to the above the welcome pages, we have a total of 4 modules divided in 2 groups: Items and General. </p>
+<h4>ORGANIZE YOUR PROJECT</h4>
+<p>I’m a messy guy, so I need a strict schema to follow when I’m working on a big project. For VIPER-S I decided to have a <strong>very clear folder structure</strong>. This is part of defining the architecture, after all. </p>
+<p>Each module group has a root folder. In this case "General" and "Items"  (I&#8217;d rather create real folders for the module groups, not just the Xcode project folders).  Each module has its own folder. For Items we have "Add", "List" and "Detail" and for "General" just "Welcome". </p>
+<p>This is the current folder structure for the project: </p>
+<p><a class="center_img border_img" href="http://www.thinkandbuild.it/wp-content/uploads/2017/06/Screen-Shot-2017-06-15-at-09.22.22.png" rel="lightbox[1312]" title="screen-shot-2017-06-15-at-09-22-22"><img src="http://www.thinkandbuild.it/wp-content/uploads/2017/06/Screen-Shot-2017-06-15-at-09.22.22-270x300.png" alt="" title="screen-shot-2017-06-15-at-09-22-22" width="270" height="300" class="alignnone size-medium wp-image-1321" /></a></p>
+<p>Each file and class follows a <strong>simple naming convention</strong>: prefixed using the folder structure that contains it, and then named after its specialization. For example, the director of the List module for Items is called "ItemsListDirector.swift" and the class name is "ItemsListDirector". This will be really useful when used with autocomplete. When you start writing "List&#8230;" you’ll get all the classes for this group. Then "&#8230;Add" to get only classes for ListAdd module. It&#8217;s a really handy convention! <img src='http://www.thinkandbuild.it/wp-includes/images/smilies/icon_smile.gif' alt=':)' class='wp-smiley' />  </p>
+<p>We’ll discuss other naming conventions later. This is just a simple rule that creates a shared logic for name definition and project organization. It’s a life-saver if you, like me, are not really good at keeping your naming style unchanged over the course of very long projects.  </p>
+<h4>THE CONTRACT AND PROTOCOLS DEFINITION</h4>
+<p>Let&#8217;s begin by writing a contract that describes the architecture for each module through protocols. A contract is the part of the architecture where you can define precisely what a module does. It&#8217;s a sort of documentation for the module.  </p>
+<p>We&#8217;ll start from the "Items List" module, translating the roles previously described into protocols. For this module we know that it shows the list of "items" through a table and it has a "delete all" button to flush all the available items. </p>
+<p>The "Display UI" role has to display items, errors and success messages. A good protocol to describe this role would be: </p>
+<pre class="brush: objc; title: ; notranslate" title="">
+protocol ItemList_DisplayUI {
+    func display(items: [ItemUI])
+    func display(error:String)
+    func displaySuccess()
+}
+</pre>
+<p>The <strong>itemUI</strong> is a base object defined by simple types like String, UIImage or Bool. We’ll discuss it later.<br />
+All the functions that update UI elements with a UI model are prefixed with the "display" word. Being really strict in the naming convention is important, because I don’t want to have doubts like "should I call this function  ‘show’, ‘display’, ‘update’ WAT?!". All the protocols have a predefined set of verbs/keywords to use. </p>
+<p>Note: here is another little naming convention that I’m using. Considering we will end up with a considerable number of files and classes for a single module, I found it useful to differentiate protocols from classes. That&#8217;s why I’m putting an underscore between the module name and the role name, obtaining the protocol name (ItemList_DisplayUI). Trust me, you’ll love this little trick later, when you write your own code and you want to autocomplete a class or a protocol name quickly. </p>
+<p>The  "Handle UI events" role has 3 functions: it has to say when the UI is ready (i.e. when viewDidLoad is called), it has to trigger an event when the user taps the "Delete All" button, and another event when an item is selected from the table. </p>
+<pre class="brush: objc; title: ; notranslate" title="">
+protocol ItemsList_HandleUIEvents {
+    func onUIReady()
+    func onDeleteAll()
+    func onItemSelected(index:Int)
+}
+</pre>
+<p>In general, the functions for this role start with the prefix "on" followed by the name of the handled event. </p>
+<p>Let’s move on to the Data domain. The first role is "Manage Data" and it has 2 functions: fetch the items and delete all the items. </p>
+<pre class="brush: objc; title: ; notranslate" title="">
+protocol ItemsList_ManageData{
+    func fetchItems()
+    func deleteAllItems()
+}
+</pre>
+<p>The second role is "Present Data". With this role we want to present items when available and we could also present generic success or error messages. </p>
+<pre class="brush: objc; title: ; notranslate" title="">
+protocol ItemsList_PresentData{
+    func present(items:[Item])
+    func presentSuccess()
+    func presentError()
+}
+</pre>
+<p>Personally I love this notation and and I find it extremely readable. The verb "present" is prefix to all the protocol functions.</p>
+<p>The Navigation domain&#8217;s only role is "Navigate". From the ItemsList module we know that we can select an item and see its detail in a dedicate view. We can also go back to the Welcome view, or more generically, we can just go back to the previous view. </p>
+<pre class="brush: objc; title: ; notranslate" title="">
+protocol ItemsList_Navigate{
+    func gotoDetail(‘for’ item:Item)
+        func goBack()
+}
+</pre>
+<p>Functions for the navigate protocol are prefixed with "go/goto".</p>
+<pre class="brush: objc; title: ; notranslate" title="">
+protocol ItemsList_Navigate{
+    func gotoDetail(`for` item:Item)
+    func goBack()
+}
+</pre>
+<p>This is the full code of the ItemsListProtocol.swift file. As you can see, if you know each role&#8217;s functionality you can easily understand what this module does:</p>
+<pre class="brush: objc; title: ; notranslate" title="">
+protocol ItemList_DisplayUI {
+    func display(items: [ItemUIModel])
+    func displayError()
+    func displaySuccess()
+}
+
+protocol ItemsList_HandleUIEvents {
+    func onUIReady()
+    func onDeleteAll()
+    func onItemSelected(index: Int)
+}
+
+protocol ItemsList_ManageData{
+    func fetchItems()
+    func deleteAllItems()
+}
+
+protocol ItemsList_PresentData{
+    func present(items:[Item])
+    func presentSuccess()
+    func presentError()
+}
+
+protocol ItemsList_Navigate{
+    func gotoDetail(`for` item:Item)
+    func goBack()
+}
+</pre>
+<p>This concludes part one of the series. In the coming parts we’ll dive deeper into the architecture&#8217;s code, writing all the actors involved. We’ll complete the ItemList module and we’ll talk about how to handle some specific patterns like passing information to another module (i.e. when you select an Item and you navigate to the detail page) and getting information from another module (i.e. when you add a new Item in the ItemsAdd module and you need to notify the ItemsList module to refresh the list).</p>
+<p>Thanks for reading this far and stay tuned for the <a href="http://www.thinkandbuild.it/viper-s-writing-your-own-architecture-to-understand-its-importance-part-2/" target="_blank">next installments</a> in the series. Ciao!</p>
+                        <a target="_blank" class="btn" href="https://github.com/ariok/VIPER-S">Download Source</a>
+                        <a href="https://twitter.com/bitwaker" class="twitter-follow-button" data-show-count="true">Follow @bitwaker</a>
+                        <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+                    </div>
+                </div>
+
+            </div>
+            <div class='clearfix'></div>
+
+        </article>
+
+
+
+
+
+
+
+
+<article class="post-1333 post type-post status-publish format-standard hentry category-tutorial">
+            <div class="entry">
+
+                <div class="image_box">
+                <img width="95" height="95" src="http://www.thinkandbuild.it/wp-content/uploads/2017/06/vip_2.png" class="entry_img wp-post-image" alt="vip_2" title="vip_2" />
+                <div class="likes">
+                        <span class="author">By <span class="name">Yari D'areglia</span></span>
+
+                        <div class="twt">
+                            <a href="https://twitter.com/share" class="twitter-share-button" data-via="bitwaker">Tweet</a>
+                        </div>
+
+                        <div class="gog">
+                            <g:plusone size="medium" href="http://www.thinkandbuild.it/viper-s-writing-your-own-architecture-to-understand-its-importance-part-2/"></g:plusone>
+                        </div>
+
+                        <div class="fb-like" data-href="http://www.thinkandbuild.it/viper-s-writing-your-own-architecture-to-understand-its-importance-part-2/" data-width="10" data-height="10px" data-colorscheme="light" data-layout="button_count" data-action="like" data-show-faces="true" data-send="false"></div>
+
+                    </div>
+                </div>
+
+                <div class="body_box">
+
+                    <time>June 19th, 2017</time>
+                    <h2><a href="http://www.thinkandbuild.it/viper-s-writing-your-own-architecture-to-understand-its-importance-part-2/">VIPER-S: writing your own architecture to understand its importance (part 2)</a></h2>
+
+                    <div class="clearfix"></div>
+
+
+                    <div class="text">
+                        <p>In the <a href="http://www.thinkandbuild.it/viper-s-writing-your-own-architecture-to-understand-its-importance-part-1/" target="_blank">previous article</a> we introduced <strong>VIPER-S</strong>, with an overview of its Domains and Roles, we organized our modules with folders and we started writing the contract for the "ItemsList" module. With this new  article we’ll complete the architecture by implementing the <strong>Actors</strong>. An Actor is the entity responsible for the implementation of all the Roles for a specific Domain that, as you may remember from the previous article, are defined by the protocols in the Contract file. That being said, we are going to implement each Actor using those protocols and connecting Actors to each other in order to achieve the architecture&#8217;s flow. Here&#8217;s the flow overview again for a quick review. </p>
+<p><a class="center_img border_img" href="http://www.thinkandbuild.it/wp-content/uploads/2017/06/viper_overview.png" rel="lightbox[1333]" title="viper_overview"><img src="http://www.thinkandbuild.it/wp-content/uploads/2017/06/viper_overview-300x191.png" alt="" title="viper_overview" width="300" height="191" class="alignnone size-medium wp-image-1318" /></a></p>
+<h3>ACTORS: THE WORKER</h3>
+<p>With the previous article we have introduced the term "Worker". This name is a good choice because it defines the class that is responsible for handling the <strong>Data domain</strong> and its roles. </p>
+<p>First we define the file and class names. As per our convention, we use the folder structure for the prefix (Items->List) and we complete the name with the word "Worker",  which results in "ItemsListWorker". The protocol that we are going to implement for this actor is "ItemsList_ManageData".<br />
+At some point the worker will have to communicate with another object which is able to present information. In our architecture this object implements the "ItemsList_PresentData" protocol. Here is an image to better describe the Worker structure.</p>
+<p><a class="center_img border_img" href="http://www.thinkandbuild.it/wp-content/uploads/2017/06/Worker.png" rel="lightbox[1333]" title="worker"><img src="http://www.thinkandbuild.it/wp-content/uploads/2017/06/Worker-211x300.png" alt="" title="worker" width="211" height="300" class="alignnone size-medium wp-image-1334" /></a></p>
+<p>With this structure in mind let’s write the code for the Worker:</p>
+<pre class="brush: objc; title: ; notranslate" title="">
+
+class ItemsListWorker {
+    let presenter: ItemsList_PresentData!
+}
+
+extension ItemsListWorker: ItemsList_ManageData {
+
+    func fetchItems(){
+
+       // get items
+
+       ... code to obtain the items here ....
+
+       if operationCompleted  {
+           presenter.present(items: Items)
+       } else {
+       // or in case of errors
+           presenter.presentError()
+       }
+    }
+
+    func deleteAllItems(){
+
+       // delete items
+
+       ... code to delete the items here ....
+
+       if operationCompleted  {
+           presenter.presentSuccess()
+        } else {
+           presenter.presentError()
+        }
+    }
+}
+
+</pre>
+<p>I generally prefer to split logics using <strong>extensions</strong>, so I’ll keep this rule for the rest of the architecture. If the code for a file gets longer than 200 lines, I usually create a new file with a specific name using extensions. Feel free to keep all the code in the same block if you prefer. </p>
+<p>The code for this class is straightforward. Essentially we interact with get/set data and, depending on the result of this operation, another class is called to present the result.  </p>
+<p>Now let’s focus on the "presenter.present(items: items)" call. If you check the prototype for the "ItemsList_PresentData" protocol you’ll notice the <strong>Item</strong> type. It&#8217;s a structure that we use as model for the information retrieved from databases/network/whatever. It’s really useful to define a model to communicate between domains because we are improving our contract with more information that better defines the communication between actors. </p>
+<p>Let’s extend the contract file with the Item structure definition: an item has a name, a creation date, and can be enabled or disabled.</p>
+<pre class="brush: objc; title: ; notranslate" title="">
+struct Item{
+     let name: String
+     var enabled:Bool
+     let date: Date
+}
+</pre>
+<h3>ACTORS: THE SCENE</h3>
+<p>This actor is essentially the <strong>user interface</strong> and it covers the UI domain. The name for this class, following our naming convention, is "ItemsListScene".<br />
+As we have already seen for the UI domain, the Scene actor has two main roles: <strong>drawing/updating the UI</strong> elements and <strong>redirecting UI events</strong> to an event handler. In order to cover these roles it has to implement the <strong>DisplayingUI</strong> protocol and it needs to communicate with another object that implements the <strong>UIEventsHandler</strong> protocol.  </p>
+<p><a class="center_img border_img" href="http://www.thinkandbuild.it/wp-content/uploads/2017/06/Scene.png" rel="lightbox[1333]" title="scene"><img src="http://www.thinkandbuild.it/wp-content/uploads/2017/06/Scene-211x300.png" alt="" title="scene" width="211" height="300" class="alignnone size-medium wp-image-1343" /></a></p>
+<p>Since at some point we have to communicate with the iOS navigation flow, we need to be in contact with the underneath UIKit layer and with the default system UI events. This actor is therefore a subclass of <strong>UIViewController</strong> in order to create this communication channel. If you are used to working with <strong>MVC</strong>, you’ll probably find the limited responsibility set that we are assigning to the view controller to be really unusual. </p>
+<p>Let’s see how all this logic ends up working in our code: </p>
+<pre class="brush: objc; title: ; notranslate" title="">
+class ItemsListScene: UIViewController {
+    @IBOutlet var table: UITableView!
+    var items: [ItemUI] = []
+    var eventsHandler: ItemsList_UIEventsHandler!
+}
+
+// MARK: - Display UI
+extension ItemsListScene: ItemsList_DisplayUI{
+
+    func display(items: [ItemUI]) {
+         self.items = items
+         table.reloadData()
+    }
+
+    func display (error:String){
+         showPopup(title: "Error", message: error)
+    }
+
+    func displaySuccess(){
+         showPopup(title: "Success", message:"Operation completed")
+    }
+}
+
+// MARK: - UI Interaction
+extension ItemsListScene {
+
+    @IBAction func deleteAll(){
+         eventsHandler. onDeleteAll()
+    }
+}
+</pre>
+<p>The code is straightforward, so we only need to check what the <strong>ItemUI</strong> is. As you know by now, with VIPER-S we want to define a clear distribution of responsibilities. That&#8217;s why we don’t want to overload the Scene with useless information. Its main role is to display information, so it expects a model that it can display without any further action. The "ItemUI" model is a transformation of the Item model that we’ve seen with the Worker actor. Let’s add the definition of the "ItemUI" model to the contract as we did for the Item model and then compare the two.  </p>
+<pre class="brush: objc; title: ; notranslate" title="">
+struct ItemUI {
+    let name: String
+    let color: UIColor
+    let date: String
+}
+
+struct Item {
+     let name: String
+     var enabled: Bool
+     let date: Date
+}
+</pre>
+<p>As you can see the two structures are slightly different. Specifically, the "name" is the only unchanged data. For starters, the "enabled" property is no longer available. Also, we are only going to assign a color to item state, because we need to talk in "UI language" here. The UI doesn’t know what "enabled" means for an item: it just needs to know which is the color to use when drawing. The "date" has been converted from <strong>Date</strong> to <strong>String</strong> because it is the most appropriate type for a label. More on this conversion with the <strong>Director</strong> actor later.</p>
+<p>The last part of the Scene is the code needed for the Table datasource and delegate. If you prefer, you can add this code to a brand new file where you only put the code related to the table. A good name for that would be "ItemsListSceneTable.swift".</p>
+<pre class="brush: objc; title: ; notranslate" title="">
+extension ItemsListScene: UITableViewDelegate, UITableViewDataSource {
+
+    func tableView(_ tableView: UITableView,
+                   numberOfRowsInSection section: Int) -&gt; Int {
+        return items.count
+    }
+
+    func tableView(_ tableView: UITableView,
+                   cellForRowAt indexPath: IndexPath) -&gt; UITableViewCell {
+
+        let cell = tableView.dequeueReusableCell(withIdentifier: &quot;Item&quot;)
+        let item = items[indexPath.row]
+
+        let nameLabel = cell!.viewWithTag(1) as! UILabel
+        let dateLabel = cell!.viewWithTag(2) as! UILabel
+
+        nameLabel.text = item.name
+        nameLabel.color = item.color
+        dateLabel.text = item.date
+
+        return cell!
+    }
+
+    func tableView(_ tableView: UITableView,
+      didSelectRowAt indexPath: IndexPath) {
+
+        eventsHandler.onItemSelected(index: indexPath.row)
+    }
+
+}
+
+</pre>
+<p>Nothing special happens on the item drawing side: they are presented as cells, setting UI elements directly with the information of the "ItemUI" model.<br />
+When a cell is selected the "eventsHandler" is triggered with the "onItemSelected" event. </p>
+<h3>ACTORS: NAVIGATOR</h3>
+<p>Here we implement the roles of the Navigation domain. The Navigator actor needs to implement the <strong>Navigate</strong> protocol and it needs a reference to the module’s ViewController to easily obtain access to the standard UIKit navigation functions. </p>
+<p><a class="center_img border_img" href="http://www.thinkandbuild.it/wp-content/uploads/2017/06/navigator.png" rel="lightbox[1333]" title="navigator"><img src="http://www.thinkandbuild.it/wp-content/uploads/2017/06/navigator.png" alt="" title="navigator" width="256" height="291" class="alignnone size-full wp-image-1344" /></a></p>
+<p>Let’s check the Navigation class code one step at the time.</p>
+<pre class="brush: objc; title: ; notranslate" title="">
+class ItemsAddNavigator: Navigator {
+    static func makeModule()-&gt; ItemListUI {
+
+        // Crete the actors
+        let scene = instantiateController(id: &quot;List&quot;,
+                                          storyboard: &quot;Items") as! ItemsListScene
+        let navigator = ItemsListNavigator(with: scene)
+        let worker = ItemsListWorker()
+        let director = ItemsListDirector()
+
+        // Associate actors
+        director.dataManager = worker
+        director.navigator = navigator
+        director.ui = scene
+        worker.presenter = director
+        scene.eventsHandler = director
+
+        return scene
+    }
+}
+</pre>
+<p>This class is extending a generic <strong>Navigator class</strong> that is just a layer above some UIKit functions and that keeps a reference to the View Controller module. I&#8217;ve only pasted the interesting portion of the parent class here, but you can check the rest of the code in the example project on <a href="https://github.com/ariok/VIPER-S" target="_blank">github</a>. </p>
+<pre class="brush: objc; title: ; notranslate" title="">
+import UIKit
+
+class Navigator  {
+
+    weak var viewController:UIViewController!
+
+    init(with viewController:UIViewController) {
+        self.viewController = viewController
+    }
+
+    static func instantiateController(id:String, storyboard:String, bundle:Bundle? = nil)-&gt; UIViewController{
+
+        let storyBoard = UIStoryboard(name: storyboard, bundle: bundle)
+        let viewController = storyBoard.instantiateViewController(withIdentifier:id)
+
+        return viewController
+    }
+
+    ... continue...
+
+</pre>
+<p>Let&#8217;s go back to the <strong>makeModule()</strong> function. Here we build the module that we are discussing: to me it’s fascinating how all the actors are easily associated to each other and how all the connections describe the whole architecture in a semantic way.<br />
+Let’s discuss the implementation of the <strong>Worker</strong> and the <strong>Scene</strong> for a moment. The Scene is initialized from a storyboard and the Director is its <strong>eventsHandler</strong>. The Worker on the other side needs a <strong>presenter</strong> that, again, is the Director (we’ll see later that the Director is responsible for the communication between domains, so it’s referenced by many objects). </p>
+<p>Here is the portion of the Navigator class where we implement the Navigation: </p>
+<pre class="brush: objc; title: ; notranslate" title="">
+extension ItemsListNavigator: ItemsList_Navigate{
+
+    func gotoDetails(‘for’ item: Item){
+        let itemDetail = ItemsDetailNavigator.makeModule(with: item)
+        push(nextViewController: itemDetail)
+    }
+
+    func goBack(){
+        dismiss(animated:true)
+    }
+}
+</pre>
+<p>With the <strong>gotoDetails</strong> function we call &#8220;makeModule&#8221;. In this case we are using the "makeModule&#8221; of the module that we will present, obtaining a View Controller that we push to the navigation stack.</p>
+<p>The &#8220;makeModule&#8221; for the ItemsDetail module needs an <strong>Item</strong> and we can easily provide it directly with the <strong>gotoDetail</strong> function. What we see here is how information can be easily shared between modules using well defined models. </p>
+<h3>ACTORS: DIRECTOR</h3>
+<p>The director is the <strong>brain</strong> of <strong>VIPER-S</strong>. Its first role is to act as a bridge between all the domains. It knows how to present data for the Scene, how to interact with the Worker to get data after a UI event, and when it’s time to call the navigator to change view.<br />
+What I love of protocols is that we can easily achieve louse coupling: the director doesn’t need to know which classes it is going to call to complete all these tasks; it only needs references to objects that implement some of the protocols defined in the contract.  </p>
+<p><a class ="center_img border_img" href="http://www.thinkandbuild.it/wp-content/uploads/2017/06/Director.png" rel="lightbox[1333]" title="director"><img src="http://www.thinkandbuild.it/wp-content/uploads/2017/06/Director-101x300.png" alt="" title="director" width="101" height="300" class="alignnone size-medium wp-image-1345" /></a></p>
+<p>Let’s see the code and examine what&#8217;s needed for each domain, one at a time: </p>
+<pre class="brush: objc; title: ; notranslate" title="">
+class ItemListDirector {
+
+    var dataManager: ItemList_ManageData!
+    var ui: ItemList_UIDisplay!
+    var navigator: ItemList_Navigate!
+
+    // Data
+    var items: [Item] = []
+
+    // UI
+    var itemsUI: [ItemUI] {
+
+        get {
+            return itemsData.map { (item) -&gt; ItemUI in
+                return ItemUI(
+                              name: item.name,
+                              color: (item.enabled) ? UIColor.green : UIColor.red,
+                              date: formatDate(item.date),
+            }
+        }
+    }
+}
+</pre>
+<p>At the top of the class we define the references to the other actors. Note that, as we mentioned earlier, the references are not pointers to Scene, Worker or Navigator objects, but just to objects that implement the needed protocols.<br />
+We keep a reference to the list of retrieved Items and we use a really handy dynamic property to <strong>convert</strong> from <strong>Item</strong> to <strong>ItemUI</strong> model.</p>
+<p>The director is able to present data coming from a Worker, so it needs to implement the <strong>ItemsList_PresentData</strong>. </p>
+<pre class="brush: objc; title: ; notranslate" title="">
+extension ItemsListDirector: ItemsList_PresentData{
+
+    func present(items:[Item]){
+        self.items = items
+        ui.display(items: itemsUI)
+    }
+
+    func presentSuccess(){
+        ui.displaySuccess()
+    }
+
+    func presentError(){
+        ui.displayError()
+    }
+}
+</pre>
+<p>With the first function we have obtained some items, so we store them and, with the "itemsUI" property, we convert them to a model that can be easily presented with the UI (in this case the Scene). The other two methods are pass-through to present messages on the UI. </p>
+<p>The <strong>HandleUIEvent</strong> implementation is straightforward:</p>
+<pre class="brush: objc; title: ; notranslate" title="">
+extension ItemsListDirector: ItemsList_HandleUIEvents{
+
+    func onUIReady() {
+        dataManager.fetchItems()
+    }
+
+    func onDeleteAll(){
+        dataManager.deleteAllItems()
+    }
+
+    func onItemSelected(index:Int) {
+        let item = items[index]
+        navigator.gotoDetail(for: item)
+    }
+}
+</pre>
+<p>When the <strong>onUIReady</strong> event is received, the Director asks the Data Manager for the items. The items will be presented with the method previously defined with the "PresentData" protocol. When an item has been <strong>selected</strong>, the Director will call the Navigator passing the selected item to show the item’s details view. After the <strong>deleteAll</strong> event is triggered, the director calls the dataManager to delete the items and then, depending on the result of the operation, the Director will present success or error with the methods we previously described. </p>
+<p>Here is the overview of all the VIPER-S actors: </p>
+<p><a class="center_img border_img" href="http://www.thinkandbuild.it/wp-content/uploads/2017/06/overview.png" rel="lightbox[1333]" title="overview"><img src="http://www.thinkandbuild.it/wp-content/uploads/2017/06/overview-300x248.png" alt="" title="overview" width="300" height="248" class="alignnone size-medium wp-image-1346" /></a></p>
+<p>With the next and last article in the series, we are going to complete the VIPER-S code, learning how to share information between modules (we introduced the topic with the navigator class) and obviously talking about <strong>how to test</strong> this code. </p>
+<p>Thanks again to <a href="https://twitter.com/rcktdsgnr" target="_blank">Nicola</a> for reviewing this article and for his very helpful hints!</p>
+                        <a target="_blank" class="btn" href="https://github.com/ariok/VIPER-S">Download Source</a>
+                        <a href="https://twitter.com/bitwaker" class="twitter-follow-button" data-show-count="true">Follow @bitwaker</a>
+                        <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+                    </div>
+                </div>
+
+            </div>
+            <div class='clearfix'></div>
+
+        </article>
+    </body>
+</html>
