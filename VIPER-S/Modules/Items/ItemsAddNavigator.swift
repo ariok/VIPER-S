@@ -6,7 +6,7 @@ class ItemsAddNavigator: Navigator {
         
         // Crete the actors
         
-        let scene = instantiateController(id: "Add", storyboard: "Items") as! ItemsAddScene
+        let scene = instantiateController(id: "Add", storyboard: "Items", bundle:Bundle(for: self)) as! ItemsAddScene
         let navigator = ItemsAddNavigator(with: scene)
         let worker = ItemsAddWorker()
         let director = ItemsAddDirector()

@@ -5,8 +5,7 @@ class ItemsListNavigator: Navigator {
     static func makeModule()-> ItemsListScene {
         
         // Crete the actors
-        
-        let scene = instantiateController(id: "List", storyboard: "Items") as! ItemsListScene
+        let scene = instantiateController(id: "List", storyboard: "Items", bundle:Bundle(for: self)) as! ItemsListScene
         let navigator = ItemsListNavigator(with: scene)
         let worker = ItemsListWorker()
         let director = ItemsListDirector()

@@ -11,7 +11,7 @@ class ItemsListWorkerTests: XCTestCase {
         var isErrorPresented = false
         var expectation:XCTestExpectation? = nil
         
-        func present(items:[Item]){ presentedItems = items; expectation?.fulfill(); print("OKKKKKKK \(items) \n\n\n\n")}
+        func present(items:[Item]){ presentedItems = items; expectation?.fulfill();}
         func presentSuccess(){ isSuccessPresented = true }
         func presentError(){ isErrorPresented = true }
     }
