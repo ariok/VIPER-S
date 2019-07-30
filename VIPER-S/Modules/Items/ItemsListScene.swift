@@ -69,7 +69,7 @@ extension ItemsListScene {
         eventsHandler.onDeleteAll()
     }
     
-    func addItem(){
+    @objc func addItem(){
         eventsHandler.onAddItem()
     }
 }
